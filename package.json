@@ -1,0 +1,8 @@
+{
+  "name": "yourplus-publisher",
+  "version": "0.1.0",
+  "private": false,
+  "type": "module",
+  "description": "Rate ticker publishing engine: GitHub Actions cron + a read-only rate endpoint + Telegram sendMessage. Engine only - no data, no secrets in code.",
+  "engines": { "node": ">=20" }
+}

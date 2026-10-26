@@ -1,0 +1,53 @@
+name: Publish rate ticker
+
+on:
+  workflow_dispatch:
+    inputs:
+      window:
+        description: "Window override for dry-run testing (empty = current window)"
+        required: false
+        default: ""
+      pairs:
+        description: 'Pairs override JSON for dry-run testing, e.g. [{"asset":"USDT","amount":"100"}] (empty = rotation)'
+        required: false
+        default: ""
+  schedule:
+    - cron: "0 */2 * * *" # DEC-020: one post every 2 hours, UTC
+
+# DEC-024: one run per group at a time; a superseded run is cancelled.
+concurrency:
+  group: ticker-publish
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Compute window and dedup key
+        id: window
+        env:
+          WINDOW_OVERRIDE: ${{ inputs.window }}
+        run: node bin/window.mjs >> "$GITHUB_OUTPUT"
+      - name: Restore published markers (DEC-024 dedup)
+        id: cache
+        uses: actions/cache@v4
+        with:
+          key: ${{ steps.window.outputs.cache-key }}
+          path: .posted
+      - name: Publish cycle
+        env:
+          RATE_PREVIEW_URL: ${{ secrets.RATE_PREVIEW_URL }}
+          RATE_PREVIEW_SECRET: ${{ secrets.RATE_PREVIEW_SECRET }}
+          TG_BOT_TOKEN: ${{ secrets.TG_BOT_TOKEN }}
+          TG_CHANNEL_ID: ${{ secrets.TG_CHANNEL_ID }}
+          WINDOW_OVERRIDE: ${{ inputs.window }}
+          PAIRS_OVERRIDE: ${{ inputs.pairs }}
+        run: node bin/cycle.mjs
