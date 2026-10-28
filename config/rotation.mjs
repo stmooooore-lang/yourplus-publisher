@@ -1,17 +1,21 @@
 /**
- * The pair rotation. Coverage rule (DEC-020): all assets, weighted by pair
- * activity - liquid pairs appear more often. Engine configuration, not
- * product data: no user data, no secrets, no project configuration here.
+ * The pair rotation (interim, 9 live majors as of 2026-10-28).
+ * Order follows catalog popularity (most popular first). When live
+ * discovery unlocks the long tail, this will be replaced by a
+ * curated "known → unknown" rotation per the owner's decision.
  */
-export const WINDOW_MS = 2 * 60 * 60 * 1000; // DEC-020 cadence: one post every 2 hours.
+export const WINDOW_MS = 2 * 60 * 60 * 1000; // 2 hours
 
 export const ROTATION = [
   { asset: "USDT", amount: "100" },
-  { asset: "BTC", amount: "0.05" },
-  { asset: "USDT", amount: "500" },
-  { asset: "ETH", amount: "0.2" },
-  { asset: "SOL", amount: "10" },
-  { asset: "TON", amount: "50" },
+  { asset: "BTC",  amount: "0.05" },
+  { asset: "ETH",  amount: "0.2" },
+  { asset: "TON",  amount: "50" },
+  { asset: "SOL",  amount: "10" },
+  { asset: "XRP",  amount: "1000" },
+  { asset: "BNB",  amount: "1" },
+  { asset: "USDC", amount: "100" },
+  { asset: "TRX",  amount: "10000" },
 ];
 
 export function windowOf(nowMs = Date.now()) {
